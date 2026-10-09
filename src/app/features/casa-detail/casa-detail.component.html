@@ -1,0 +1,97 @@
+<ng-container *ngIf="casa() as c">
+  <header class="mb-6 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a routerLink="/" class="tec-btn-secondary text-sm">← Casas</a>
+      <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Casa</p>
+        <h1 class="text-xl font-semibold text-gray-900">{{ c.numero }}</h1>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 text-xs text-gray-600">
+      <span class="status-badge status-libre">Libre</span>
+      <span class="status-badge status-ocupado">Ocupado</span>
+      <button class="tec-btn-secondary" (click)="mostrarEditarCasa.set(true)">Editar casa</button>
+    </div>
+  </header>
+
+  <div class="mb-8 grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));">
+    <div
+      *ngFor="let cu of cuartos()"
+      class="tec-card flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 hover:border-tec-700"
+      [ngClass]="{ 'bg-tec-100': ocupadoAhora(cu.id) }"
+      (click)="abrirPanel(cu.id)"
+    >
+      <span class="text-lg font-semibold text-gray-900">{{ cu.numero }}</span>
+      <span class="status-badge" [ngClass]="ocupadoAhora(cu.id) ? 'status-ocupado' : 'status-libre'">
+        {{ ocupadoAhora(cu.id) ? 'Ocupado' : 'Libre' }}
+      </span>
+      <span *ngIf="ocupadoAhora(cu.id)" class="px-1 text-center text-[10px] leading-tight text-gray-500">
+        {{ primerNombre(ocupanteActual(cu.id)!.nombre_persona) }}
+      </span>
+    </div>
+  </div>
+
+  <h2 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-600">
+    Horario por cuarto — próximos 60 días
+  </h2>
+  <div class="tec-card mb-8 overflow-x-auto p-5">
+    <div class="mb-3 flex items-center gap-3" style="min-width: 640px;">
+      <div class="w-16 shrink-0"></div>
+      <div class="flex flex-1 justify-between text-[10px] text-gray-500">
+        <span>{{ rangoInicioLabel }}</span>
+        <span>{{ rangoMedioLabel }}</span>
+        <span>{{ rangoFinLabel }}</span>
+      </div>
+    </div>
+
+    <p *ngIf="cuartos().length === 0" class="text-sm text-gray-400">Sin cuartos.</p>
+
+    <div *ngFor="let cu of cuartos()" class="mb-2 flex items-center gap-3">
+      <div class="w-16 shrink-0 text-xs text-gray-600">Cto. {{ cu.numero }}</div>
+      <div class="relative h-7 flex-1 rounded border border-gray-200 bg-gray-50" style="min-width: 640px;">
+        <div
+          *ngFor="let bar of barsFor(cu.id)"
+          class="absolute top-1 bottom-1 flex items-center overflow-hidden whitespace-nowrap rounded px-1.5 text-[10px] text-white"
+          [style.left.%]="bar.left"
+          [style.width.%]="bar.width"
+          [style.background]="bar.color"
+          [title]="bar.title"
+        >
+          {{ bar.label }}
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<app-editar-casa-modal
+  *ngIf="mostrarEditarCasa() && casa() as c"
+  [casa]="c"
+  (cancelado)="mostrarEditarCasa.set(false)"
+  (actualizada)="onCasaActualizada()"
+  (eliminada)="onCasaEliminada()"
+></app-editar-casa-modal>
+
+<app-cuarto-panel-modal
+  *ngIf="panelCuartoId() as cid"
+  [casaNumero]="casa()!.numero"
+  [cuartoNumero]="cuartoNumero(cid)"
+  [registros]="registrosMap()[cid] || []"
+  (cerrar)="cerrarPanel()"
+  (nuevoSolicitado)="pedirNuevoRegistro(cid)"
+  (editarSolicitado)="pedirEditarRegistro(cid, $event)"
+  (cambiado)="onCuartoPanelCambiado(cid)"
+></app-cuarto-panel-modal>
+
+<app-registro-form-modal
+  *ngIf="formState() as fs"
+  [casaNumero]="casa()!.numero"
+  [cuartoId]="fs.cuartoId"
+  [cuartoNumero]="cuartoNumero(fs.cuartoId)"
+  [departamentos]="departamentos()"
+  [registrosExistentes]="registrosMap()[fs.cuartoId] || []"
+  [editing]="fs.editing"
+  (cancelado)="formState.set(null); panelCuartoId.set(fs.cuartoId)"
+  (guardado)="onRegistroGuardado(fs.cuartoId)"
+  (departamentoCreado)="onDepartamentoCreado($event)"
+></app-registro-form-modal>

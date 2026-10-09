@@ -1,0 +1,31 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 p-4">
+  <div class="tec-card w-full max-w-sm p-7">
+    <h1 class="mb-1 text-lg font-semibold text-tec-800">
+      {{ mode() === 'signup' ? 'Crear cuenta' : 'Iniciar sesión' }}
+    </h1>
+    <p class="mb-5 text-sm text-gray-600">Registro de Viviendas · Tecnológico de Costa Rica</p>
+
+    <div
+      *ngIf="message()"
+      class="mb-4 rounded border px-3 py-2 text-sm"
+      [ngClass]="messageKind() === 'error'
+        ? 'border-red-300 bg-red-50 text-red-800'
+        : 'border-tec-700 bg-tec-100 text-tec-900'"
+    >
+      {{ message() }}
+    </div>
+
+    <label class="tec-label">Correo institucional</label>
+    <input type="email" class="tec-input mb-3" placeholder="persona@tec.ac.cr" [(ngModel)]="email" />
+
+    <label class="tec-label">Contraseña</label>
+    <input type="password" class="tec-input mb-5" placeholder="••••••••" [(ngModel)]="password" />
+
+    <button class="tec-btn-primary mb-3 w-full" (click)="submit()">
+      {{ mode() === 'signup' ? 'Crear cuenta' : 'Entrar' }}
+    </button>
+    <button class="tec-btn-secondary w-full text-xs" (click)="toggleMode()">
+      {{ mode() === 'signup' ? '¿Ya tenés cuenta? Iniciar sesión' : '¿Sos nuevo? Crear cuenta' }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,43 @@
+<header class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-semibold text-gray-900">Registro de Viviendas</h1>
+    <p class="mt-1 text-sm text-gray-500">Instituto Tecnológico de Costa Rica</p>
+  </div>
+  <button class="tec-btn-primary" (click)="mostrarAgregarCasa.set(true)">+ Agregar casa</button>
+</header>
+
+<div *ngIf="!cargando() && casas().length === 0" class="tec-card col-span-full p-8 text-center">
+  <p class="mb-4 text-sm text-gray-500">Todavía no hay casas registradas.</p>
+  <button class="tec-btn-primary" (click)="mostrarAgregarCasa.set(true)">Registrar la primera casa</button>
+</div>
+
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <div
+    *ngFor="let c of casas()"
+    class="tec-card cursor-pointer p-5 hover:border-tec-700"
+    (click)="abrirCasa(c.id)"
+  >
+    <div class="mb-4 flex items-start justify-between">
+      <div>
+        <p class="text-xs uppercase tracking-wide text-gray-500">Casa</p>
+        <p class="text-xl font-semibold text-gray-900">{{ c.numero }}</p>
+      </div>
+      <div class="text-right text-xs text-gray-500">{{ c.cantidad_cuartos }} cuarto{{ c.cantidad_cuartos > 1 ? 's' : '' }}</div>
+    </div>
+    <div *ngIf="occupancy()[c.id] as occ; else calculando" class="flex items-center gap-2 text-xs text-gray-600">
+      <span class="status-badge" [ngClass]="occ.ocupados > 0 ? 'status-ocupado' : 'status-libre'">
+        {{ occ.ocupados > 0 ? 'Con ocupación' : 'Todo libre' }}
+      </span>
+      <span>{{ occ.ocupados }}/{{ occ.total }} cuartos ocupados ahora</span>
+    </div>
+    <ng-template #calculando>
+      <p class="text-xs text-gray-400">Calculando ocupación...</p>
+    </ng-template>
+  </div>
+</div>
+
+<app-agregar-casa-modal
+  *ngIf="mostrarAgregarCasa()"
+  (cancelado)="mostrarAgregarCasa.set(false)"
+  (creada)="onCasaCreada()"
+></app-agregar-casa-modal>

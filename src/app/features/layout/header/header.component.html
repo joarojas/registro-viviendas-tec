@@ -1,0 +1,21 @@
+<header class="border-b border-tec-900 bg-tec-800 text-white">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+    <a routerLink="/" class="flex items-center gap-2">
+      <span class="text-lg font-semibold tracking-wide">TEC</span>
+      <span class="hidden text-sm text-gray-200 sm:inline">| Registro de Viviendas</span>
+    </a>
+    <div class="flex flex-wrap items-center justify-end gap-2">
+      <span class="hidden text-xs text-gray-200 md:inline">{{ auth.user()?.email }}</span>
+      <button
+        class="rounded border border-white/40 px-3 py-1.5 text-xs text-white hover:bg-white/10"
+        [disabled]="enviando"
+        (click)="enviarReporte()"
+      >
+        {{ enviando ? 'Enviando...' : 'Enviar reporte' }}
+      </button>
+      <button class="rounded border border-white/40 px-3 py-1.5 text-xs text-white hover:bg-white/10" (click)="cerrarSesion()">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</header>

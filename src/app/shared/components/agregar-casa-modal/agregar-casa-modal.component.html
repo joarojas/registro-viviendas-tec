@@ -1,0 +1,18 @@
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
+  <div class="tec-card w-full max-w-sm p-6">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Agregar casa</h2>
+
+    <label class="tec-label">Número o identificador de la casa</label>
+    <input class="tec-input mb-1" placeholder="Ej. 14, A-3..." maxlength="{{ maxNumero }}" [(ngModel)]="numero" />
+    <p class="mb-3 text-xs text-gray-500">Solo letras, números, espacios y guiones (máx. {{ maxNumero }} caracteres).</p>
+
+    <label class="tec-label">Cantidad de cuartos (máx. 10)</label>
+    <input type="number" min="1" max="10" class="tec-input mb-1" placeholder="Ej. 4" [(ngModel)]="cantidadCuartos" />
+    <p *ngIf="errorCuartos()" class="mb-3 text-xs text-red-700">Debe ser un número entero entre 1 y 10.</p>
+
+    <div class="mt-4 flex justify-end gap-2">
+      <button class="tec-btn-secondary" (click)="cancelado.emit()">Cancelar</button>
+      <button class="tec-btn-primary" (click)="guardar()">Guardar</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background-color: #f8f9fb;
+  color: #1f2937;
+}
+
+/* Inputs y botones institucionales reutilizables */
+.tec-input {
+  @apply w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none;
+}
+.tec-input:focus {
+  @apply border-tec-700 ring-1 ring-tec-700;
+}
+.tec-btn-primary {
+  @apply rounded bg-tec-800 px-4 py-2 text-sm font-medium text-white hover:bg-tec-900 transition-colors;
+}
+.tec-btn-secondary {
+  @apply rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50 transition-colors;
+}
+.tec-card {
+  @apply rounded-md border border-gray-300 bg-white shadow-sm;
+}
+.tec-label {
+  @apply mb-1 block text-xs font-medium text-gray-600;
+}
+.status-badge {
+  @apply inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide;
+}
+.status-libre {
+  @apply bg-gray-100 text-gray-600 border border-gray-300;
+}
+.status-ocupado {
+  @apply bg-tec-800 text-white;
+}

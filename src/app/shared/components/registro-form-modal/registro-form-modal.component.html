@@ -1,0 +1,82 @@
+<div class="fixed inset-0 z-40 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
+  <div class="tec-card my-8 w-full max-w-lg p-6">
+    <div class="mb-1 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900">{{ editing ? 'Editar registro' : 'Registrar ocupación' }}</h2>
+      <span class="text-xs text-gray-500">Casa {{ casaNumero }} · Cuarto {{ cuartoNumero }}</span>
+    </div>
+    <p class="mb-4 text-xs text-gray-500">
+      {{ otrosRegistros.length }} otro(s) registro(s) en este cuarto — se validará contra todos.
+    </p>
+
+    <div *ngIf="conflicto()" class="mb-4 rounded border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">
+      {{ conflicto() }}
+    </div>
+
+    <div class="mb-3 grid grid-cols-2 gap-3">
+      <div class="col-span-2">
+        <label class="tec-label">Nombre de la persona</label>
+        <input class="tec-input" placeholder="Nombre completo" maxlength="{{ maxNombre }}" [(ngModel)]="nombre" />
+      </div>
+      <div class="col-span-2">
+        <label class="tec-label">Correo de la persona ocupante</label>
+        <input type="email" class="tec-input" placeholder="persona@tec.ac.cr" maxlength="{{ maxCorreo }}" [(ngModel)]="correo" />
+        <p class="mt-1 text-xs text-gray-500">Ahí le llega la confirmación con su casa y número de cuarto.</p>
+      </div>
+      <div>
+        <label class="tec-label">Departamento</label>
+        <select class="tec-input" [(ngModel)]="deptoId">
+          <option value="">— Seleccionar —</option>
+          <option *ngFor="let d of departamentos" [value]="d.id">{{ d.nombre }}</option>
+          <option value="__new__">+ Nuevo departamento...</option>
+        </select>
+      </div>
+      <div>
+        <label class="tec-label">Tipo de ocupación</label>
+        <select class="tec-input" [(ngModel)]="tipo">
+          <option value="fijo">Fijo</option>
+          <option value="semestral">Préstamo semestral</option>
+          <option value="periodo">Préstamo por periodo</option>
+        </select>
+      </div>
+    </div>
+
+    <div *ngIf="deptoId === '__new__'" class="mb-3">
+      <label class="tec-label">Nombre del nuevo departamento</label>
+      <input class="tec-input" placeholder="Ej. Vicerrectoría de Vida Estudiantil" maxlength="{{ maxDepto }}" [(ngModel)]="deptoNuevoNombre" />
+    </div>
+
+    <div class="mb-3 flex items-center gap-2">
+      <input type="checkbox" id="dia-completo" class="h-4 w-4" [(ngModel)]="diaCompleto" />
+      <label for="dia-completo" class="text-sm text-gray-800">Registrar por día(s) completo(s)</label>
+    </div>
+
+    <div class="mb-3 grid grid-cols-2 gap-3">
+      <div>
+        <label class="tec-label">Fecha de ingreso</label>
+        <input type="date" class="tec-input" [(ngModel)]="fechaIni" />
+      </div>
+      <div *ngIf="!diaCompleto">
+        <label class="tec-label">Hora de ingreso</label>
+        <input type="time" class="tec-input" [(ngModel)]="horaIni" />
+      </div>
+      <div>
+        <label class="tec-label">Fecha de salida</label>
+        <input type="date" class="tec-input" [(ngModel)]="fechaFin" [disabled]="indefinido" />
+      </div>
+      <div *ngIf="!diaCompleto">
+        <label class="tec-label">Hora de salida</label>
+        <input type="time" class="tec-input" [(ngModel)]="horaFin" [disabled]="indefinido" />
+      </div>
+    </div>
+
+    <div class="mb-5 flex items-center gap-2">
+      <input type="checkbox" id="indefinido" class="h-4 w-4" [(ngModel)]="indefinido" />
+      <label for="indefinido" class="text-sm text-gray-800">Sin fecha de salida definida (uso indefinido)</label>
+    </div>
+
+    <div class="flex justify-end gap-2">
+      <button class="tec-btn-secondary" (click)="cancelado.emit()">Cancelar</button>
+      <button class="tec-btn-primary" (click)="guardar()">{{ editing ? 'Guardar cambios' : 'Registrar' }}</button>
+    </div>
+  </div>
+</div>

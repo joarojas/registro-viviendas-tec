@@ -1,0 +1,9 @@
+<div class="fixed top-4 right-4 z-[100] flex w-full max-w-xs flex-col gap-2">
+  <div
+    *ngFor="let t of toastSvc.toasts()"
+    class="tec-card px-4 py-3 text-sm text-gray-800"
+    [ngClass]="borderClass(t.kind)"
+  >
+    {{ t.text }}
+  </div>
+</div>

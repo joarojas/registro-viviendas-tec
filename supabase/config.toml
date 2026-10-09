@@ -1,0 +1,8 @@
+# Configuración del proyecto para la CLI de Supabase.
+# https://supabase.com/docs/guides/local-development/cli/config
+
+[functions.enviar-reporte]
+verify_jwt = false
+
+[functions.enviar-confirmacion]
+verify_jwt = false
