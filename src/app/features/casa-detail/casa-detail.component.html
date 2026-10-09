@@ -10,6 +10,15 @@
     <div class="flex items-center gap-4 text-xs text-gray-600">
       <span class="status-badge status-libre">Libre</span>
       <span class="status-badge status-ocupado">Ocupado</span>
+      
+      <!-- Botón para reportes masivos -->
+      <button 
+        (click)="enviarReportesSeleccionados()" 
+        [disabled]="enviandoReportes() || cuartosSeleccionados().size === 0"
+        class="bg-[#002855] text-white px-3 py-1.5 rounded-md hover:bg-blue-800 disabled:opacity-50 transition-opacity">
+        {{ enviandoReportes() ? 'Enviando...' : 'Enviar Reportes (' + cuartosSeleccionados().size + ')' }}
+      </button>
+
       <button class="tec-btn-secondary" (click)="mostrarEditarCasa.set(true)">Editar casa</button>
     </div>
   </header>
@@ -17,17 +26,30 @@
   <div class="mb-8 grid gap-2" style="grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));">
     <div
       *ngFor="let cu of cuartos()"
-      class="tec-card flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 hover:border-tec-700"
+      class="tec-card relative flex aspect-square flex-col items-center justify-center gap-1 hover:border-tec-700"
       [ngClass]="{ 'bg-tec-100': ocupadoAhora(cu.id) }"
-      (click)="abrirPanel(cu.id)"
     >
-      <span class="text-lg font-semibold text-gray-900">{{ cu.numero }}</span>
-      <span class="status-badge" [ngClass]="ocupadoAhora(cu.id) ? 'status-ocupado' : 'status-libre'">
-        {{ ocupadoAhora(cu.id) ? 'Ocupado' : 'Libre' }}
-      </span>
-      <span *ngIf="ocupadoAhora(cu.id)" class="px-1 text-center text-[10px] leading-tight text-gray-500">
-        {{ primerNombre(ocupanteActual(cu.id)!.nombre_persona) }}
-      </span>
+      <!-- Checkbox de selección para reporte (solo visible si está ocupado) -->
+      <div *ngIf="ocupadoAhora(cu.id)" class="absolute top-1 left-1">
+        <input 
+          type="checkbox" 
+          class="w-3.5 h-3.5 cursor-pointer accent-[#002855]"
+          (change)="toggleCuartoReporte(cu.id)" 
+          [checked]="cuartosSeleccionados().has(cu.id)"
+          title="Seleccionar para enviar reporte"
+        >
+      </div>
+
+      <!-- Área clickeable para abrir el panel -->
+      <div class="flex flex-col items-center cursor-pointer w-full h-full justify-center" (click)="abrirPanel(cu.id)">
+        <span class="text-lg font-semibold text-gray-900">{{ cu.numero }}</span>
+        <span class="status-badge" [ngClass]="ocupadoAhora(cu.id) ? 'status-ocupado' : 'status-libre'">
+          {{ ocupadoAhora(cu.id) ? 'Ocupado' : 'Libre' }}
+        </span>
+        <span *ngIf="ocupadoAhora(cu.id)" class="px-1 text-center text-[10px] leading-tight text-gray-500">
+          {{ primerNombre(ocupanteActual(cu.id)!.nombre_persona) }}
+        </span>
+      </div>
     </div>
   </div>
 

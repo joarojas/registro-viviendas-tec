@@ -6,7 +6,7 @@ import { rangesOverlap } from '../utils/date-utils';
 export interface RegistroPayload {
   cuarto_id: string;
   nombre_persona: string;
-  correo_persona: string;
+  correo_persona: string; // <-- Línea agregada
   departamento_id: string;
   tipo: Registro['tipo'];
   dia_completo: boolean;
@@ -15,7 +15,6 @@ export interface RegistroPayload {
   fin: string;
 }
 
-/** Código de Postgres para violación del "exclusion constraint" anti-choques. */
 export const EXCLUSION_VIOLATION = '23P01';
 
 @Injectable({ providedIn: 'root' })
@@ -32,7 +31,6 @@ export class RegistrosService {
     return data as unknown as Registro[];
   }
 
-  /** Busca, entre los registros ya cargados, uno que choque con el rango dado. */
   buscarChoque(existentes: Registro[], inicio: string, fin: string, excluirId?: string): Registro | undefined {
     return existentes.find((r) => (!excluirId || r.id !== excluirId) && rangesOverlap(inicio, fin, r.inicio, r.fin));
   }

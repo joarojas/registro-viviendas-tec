@@ -20,17 +20,6 @@ export class HeaderComponent {
     private toast: ToastService,
   ) {}
 
-  async enviarReporte(): Promise<void> {
-    this.enviando = true;
-    try {
-      await this.reporte.enviarReporte();
-      this.toast.show(`Reporte enviado a ${this.auth.user()?.email ?? 'tu correo'}.`, 'success');
-    } catch (e: any) {
-      this.toast.show('No se pudo enviar el reporte: ' + (e?.message ?? e), 'error');
-    } finally {
-      this.enviando = false;
-    }
-  }
 
   cerrarSesion(): void {
     this.auth.signOut();

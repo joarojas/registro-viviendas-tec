@@ -120,17 +120,8 @@ Si `GMAIL_USER`/`GMAIL_APP_PASSWORD` no están definidos pero sí `RESEND_API_KE
 - Para producción real, lo ideal es un correo institucional del TEC o un dominio verificado, no una cuenta de Gmail.
 - `confirmar-registro` exige sesión iniciada y **solo envía si existe un registro de los últimos 10 minutos con ese correo**, para que nadie pueda usarla como relé de correo.
 
-## 6. Zona horaria (Costa Rica, UTC-6)
 
-Todo el sistema trabaja en **hora de Costa Rica**, sin importar la zona de la computadora ni la del servidor (Supabase usa UTC):
-
-- Al **guardar**, las fechas se mandan con el offset explícito `-06:00` (`crearFechaCostaRica` en `core/utils/date-utils.ts`). Costa Rica no tiene horario de verano, así que el offset es fijo.
-- Al **mostrar o editar**, siempre se convierte a `America/Costa_Rica` (`partesCR`, `fmtDateTime`).
-- Los **correos** también formatean en hora de Costa Rica.
-
-> ⚠️ **Registros de prueba anteriores:** los creados antes de esta corrección quedaron guardados con un desfase de 6 horas. Si son solo de prueba, lo más simple es borrarlos y volver a crearlos (SQL Editor: `delete from registros;`). No conviene "corregirlos" con un `update` masivo: la restricción anti-choques puede rechazarlo a mitad de camino.
-
-## 7. Desplegar la página
+## 6. Desplegar la página
 
 La app es estática (HTML + JS): se puede publicar gratis. La conexión a Supabase ya va dentro del build, no hay que configurar variables.
 

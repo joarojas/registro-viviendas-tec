@@ -20,7 +20,6 @@ export class RegistroFormModalComponent implements OnInit {
   @Input({ required: true }) cuartoId!: string;
   @Input({ required: true }) cuartoNumero!: number;
   @Input({ required: true }) departamentos!: Departamento[];
-  /** Todos los registros de este cuarto (incluye el que se está editando, si aplica). */
   @Input({ required: true }) registrosExistentes!: Registro[];
   @Input() editing: Registro | null = null;
 
@@ -167,8 +166,6 @@ export class RegistroFormModalComponent implements OnInit {
       );
       this.guardado.emit();
 
-      // El correo de confirmación solo se manda al crear un registro nuevo
-      // (no en cada edición), y no bloquea el flujo si falla el envío.
       if (esNuevo) {
         this.confirmacionSvc.enviarConfirmacion({
           correo: payload.correo_persona,

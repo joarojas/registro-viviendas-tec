@@ -5,6 +5,7 @@ import { Casa, Cuarto, Departamento, Registro } from '../../core/models/models';
 import { CasasService } from '../../core/services/casas.service';
 import { RegistrosService } from '../../core/services/registros.service';
 import { DepartamentosService } from '../../core/services/departamentos.service';
+import { ReporteService } from '../../core/services/reporte.service'; // <-- Agregado
 import { ToastService } from '../../core/services/toast.service';
 import { CuartoPanelModalComponent } from '../../shared/components/cuarto-panel-modal/cuarto-panel-modal.component';
 import { RegistroFormModalComponent } from '../../shared/components/registro-form-modal/registro-form-modal.component';
@@ -31,6 +32,10 @@ export class CasaDetailComponent implements OnInit {
   panelCuartoId = signal<string | null>(null);
   formState = signal<FormState | null>(null);
 
+  // Variables para selección y envío de reportes
+  cuartosSeleccionados = signal<Set<string>>(new Set());
+  enviandoReportes = signal(false);
+
   private readonly diasVentana = 60;
   private rangeStart = new Date();
   private rangeEnd = new Date();
@@ -41,9 +46,9 @@ export class CasaDetailComponent implements OnInit {
     private casasSvc: CasasService,
     private registrosSvc: RegistrosService,
     private departamentosSvc: DepartamentosService,
+    private reporteSvc: ReporteService, // <-- Agregado
     private toast: ToastService,
   ) {
-    // La ventana de 60 días arranca a medianoche de hoy en Costa Rica.
     this.rangeStart = new Date(crearFechaCostaRica(hoyCR(), '00:00:00'));
     this.rangeEnd = new Date(this.rangeStart);
     this.rangeEnd.setDate(this.rangeEnd.getDate() + this.diasVentana);
@@ -94,6 +99,43 @@ export class CasaDetailComponent implements OnInit {
     return nombreCompleto.split(' ')[0];
   }
 
+  // ---------- Selección y envío de reportes ----------
+  toggleCuartoReporte(cuartoId: string): void {
+    this.cuartosSeleccionados.update(set => {
+      const newSet = new Set(set);
+      if (newSet.has(cuartoId)) newSet.delete(cuartoId);
+      else newSet.add(cuartoId);
+      return newSet;
+    });
+  }
+
+  async enviarReportesSeleccionados(): Promise<void> {
+    const seleccionados = Array.from(this.cuartosSeleccionados());
+    if (seleccionados.length === 0) return;
+
+    this.enviandoReportes.set(true);
+    let exitosos = 0;
+    const casaNumero = Number(this.casa()?.numero);
+
+    for (const cuartoId of seleccionados) {
+      const cuarto = this.cuartos().find(c => c.id === cuartoId);
+      const ocupante = this.ocupanteActual(cuartoId);
+      
+      if (casaNumero && cuarto && ocupante?.correo_persona) {
+        try {
+          await this.reporteSvc.enviarReporte(casaNumero, cuarto.numero, ocupante.correo_persona);
+          exitosos++;
+        } catch (e) {
+          console.error(`Fallo envío a ${ocupante.correo_persona}`, e);
+        }
+      }
+    }
+
+    this.toast.show(`Se enviaron ${exitosos} reportes exitosamente.`, exitosos === seleccionados.length ? 'success' : 'error');
+    this.cuartosSeleccionados.set(new Set()); // Limpiar checkboxes
+    this.enviandoReportes.set(false);
+  }
+
   // ---------- Línea de tiempo ----------
   get rangoInicioLabel(): string { return fmtDate(this.rangeStart); }
   get rangoFinLabel(): string { return fmtDate(this.rangeEnd); }
@@ -139,7 +181,6 @@ export class CasaDetailComponent implements OnInit {
   async onRegistroGuardado(cuartoId: string): Promise<void> {
     this.formState.set(null);
     await this.recargarCuarto(cuartoId);
-    // el panel se vuelve a mostrar con la lista ya actualizada
     this.panelCuartoId.set(cuartoId);
   }
 
@@ -159,7 +200,7 @@ export class CasaDetailComponent implements OnInit {
   async onCasaActualizada(): Promise<void> {
     this.mostrarEditarCasa.set(false);
     const casaId = this.casa()?.id;
-    if (casaId) await this.cargar(casaId); // recarga por si cambió la cantidad de cuartos
+    if (casaId) await this.cargar(casaId); 
   }
 
   onCasaEliminada(): void {

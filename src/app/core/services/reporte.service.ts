@@ -6,8 +6,11 @@ import { mensajeDeFuncion } from '../utils/errores';
 export class ReporteService {
   constructor(private sb: SupabaseService) {}
 
-  async enviarReporte(): Promise<void> {
-    const { error } = await this.sb.client.functions.invoke('enviar-reporte', { body: {} });
+  async enviarReporte(casaNumero: number, cuartoNumero: number, correoDestino: string): Promise<void> {
+    const { error } = await this.sb.client.functions.invoke('enviar-reporte', { 
+      body: { casaNumero, cuartoNumero, correoDestino } 
+    });
+    
     if (error) throw new Error(await mensajeDeFuncion(error));
   }
 }
